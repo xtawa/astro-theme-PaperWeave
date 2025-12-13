@@ -7,7 +7,7 @@ import fetch from 'node-fetch'
 // Configuration
 // Prioritize process.env for Node.js adapter environment variables
 const CHANNEL_USERNAME = process.env.CASUAL_TELEGRAM_CHANNEL || import.meta.env.CASUAL_TELEGRAM_CHANNEL || 'hi_co1sini_casual'
-const PROXY_URL = process.env.HTTPS_PROXY || import.meta.env.HTTPS_PROXY || process.env.https_proxy || 'http://127.0.0.1:7890'
+const PROXY_URL = process.env.HTTPS_PROXY || import.meta.env.HTTPS_PROXY || process.env.https_proxy
 
 interface CasualPost {
   id: string
