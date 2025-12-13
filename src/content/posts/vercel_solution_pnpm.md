@@ -14,6 +14,7 @@ toc: true
 lang: ""
 abbrlink: vercel-solution-pnpm
 share: true
+状态: 已完成
 ---
 
 在Vercel部署Astro时，遇到 ERR_INVAILD_THIS 错误
