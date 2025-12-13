@@ -197,6 +197,14 @@ export const themeConfig: ThemeConfig = {
     // see https://umami.is/docs/bypass-ad-blockers
     customUmamiAnalyticsJS: 'https://views.radishzz.cc/script.js',
   },
+  search: {
+    algolia: {
+      enabled: true,
+      appId: 'XG9J7TBGD8',
+      apiKey: '6738b60975e427e5f03336e138adc5f5',
+      indexName: 'blog_xtyin',
+    },
+  },  
   // PRELOAD SETTINGS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END
 }
 
