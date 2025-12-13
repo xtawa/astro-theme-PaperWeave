@@ -3,6 +3,7 @@ import { allLocales } from '@/config'
 import { getLangFromLocale, getLangRouteParam } from '@/i18n/lang'
 import { ui } from '@/i18n/ui'
 import Layout from '@/layouts/Layout.astro'
+import '@pagefind/default-ui/css/ui.css'
 
 export async function getStaticPaths() {
   return allLocales.map(lang => ({
@@ -26,10 +27,9 @@ const currentUI = ui[currentLang as keyof typeof ui] ?? {}
     <div id="search" class="ml-3 p-4"></div>
   </div>
 
-  <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
-  <script is:inline src="/pagefind/pagefind-ui.js"></script>
-
-  <script is:inline>
+  <script>
+    import { PagefindUI } from '@pagefind/default-ui';
+    
     function initPagefind() {
       const searchContainer = document.getElementById('search');
       if (!searchContainer) return;
@@ -37,22 +37,19 @@ const currentUI = ui[currentLang as keyof typeof ui] ?? {}
       // Clear previous instance if exists (for View Transitions)
       searchContainer.innerHTML = '';
       
-      // Check if PagefindUI is loaded
-      if (typeof PagefindUI !== 'undefined') {
-        new PagefindUI({
-          element: '#search',
-          showSubResults: true,
-          showImages: false,
-          translations: {
-            placeholder: 'Search...',
-            zero_results: 'No results found for "[SEARCH_TERM]"',
-          }
-        });
-      }
+      new PagefindUI({
+        element: '#search',
+        showSubResults: true,
+        showImages: false,
+        translations: {
+          placeholder: 'Search...',
+          zero_results: 'No results found for "[SEARCH_TERM]"',
+        }
+      });
     }
     
     // Initialize on first load
-    document.addEventListener('DOMContentLoaded', initPagefind);
+    initPagefind();
     
     // Reinitialize on View Transitions navigation
     document.addEventListener('astro:page-load', initPagefind);
