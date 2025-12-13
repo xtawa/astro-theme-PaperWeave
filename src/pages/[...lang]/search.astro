@@ -42,31 +42,40 @@ const isAlgoliaEnabled = algoliaConfig?.enabled && algoliaConfig.appId && algoli
       <script is:inline define:vars={{ appId: algoliaConfig!.appId, apiKey: algoliaConfig!.apiKey, indexName: algoliaConfig!.indexName }}>
         function initDocSearch() {
           const container = document.getElementById('docsearch');
+          // Check if container exists and docsearch is loaded
           if (!container || typeof docsearch === 'undefined') return;
           
+          // Clear container to prevent duplicates
           container.innerHTML = '';
           
-          docsearch({
-            appId: appId,
-            apiKey: apiKey,
-            indexName: indexName,
-            container: '#docsearch',
-            debug: false,
-          });
+          try {
+            docsearch({
+              appId: appId,
+              apiKey: apiKey,
+              indexName: indexName,
+              container: '#docsearch',
+              debug: false, // Set to true if styling issues persist
+            });
+          } catch (e) {
+            console.error('DocSearch init failed:', e);
+          }
         }
         
-        // Load DocSearch JS
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/@docsearch/js@3';
-        script.onload = initDocSearch;
-        document.head.appendChild(script);
+        // Load DocSearch JS if not already loaded
+        if (!document.getElementById('docsearch-script')) {
+          const script = document.createElement('script');
+          script.id = 'docsearch-script';
+          script.src = 'https://cdn.jsdelivr.net/npm/@docsearch/js@3';
+          script.onload = initDocSearch;
+          document.head.appendChild(script);
+        } else {
+          // If script exists, initialize immediately
+          initDocSearch();
+        }
         
-        // Reinitialize on View Transitions navigation
-        document.addEventListener('astro:page-load', () => {
-          if (typeof docsearch !== 'undefined') {
-            initDocSearch();
-          }
-        });
+        // Note: Since this is an inline script, it runs every time the page content is updated 
+        // by View Transitions, so we don't need a separate 'astro:page-load' listener 
+        // which would accumulate duplicates.
       </script>
     </>
   )}
