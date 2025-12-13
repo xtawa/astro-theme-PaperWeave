@@ -1,5 +1,5 @@
 ---
-title: first-post
+title: vercel部署时遇到ERR_INVAILD_THIS的解决方法
 published: 2025-12-06T00:00:00
 description: 通过指定使用pnpm版本和启用vercel的实验性功能来解决ERR_INVAILD_THIS问题
 updated: ""
@@ -12,7 +12,7 @@ draft: false
 pin: 0
 toc: false
 lang: ""
-abbrlink: vercel_solution_pnpm
+abbrlink: vercel-solution-pnpm
 share: true
 ---
 
