@@ -10,7 +10,7 @@ tags:
   - Astro
 draft: false
 pin: 0
-toc: false
+toc: true
 lang: ""
 abbrlink: vercel-solution-pnpm
 share: true
