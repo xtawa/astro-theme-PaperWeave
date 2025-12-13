@@ -75,7 +75,7 @@ export default defineConfig({
       [rehypeMermaid, { strategy: 'pre-mermaid' }],
       rehypeSlug,
       rehypeHeadingAnchor,
-      rehypeImageProcessor,
+    //  rehypeImageProcessor, // 用于处理远程图片,因报错已停止
       rehypeExternalLinks,
       rehypeCodeCopyButton,
     ],
