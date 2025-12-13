@@ -4,7 +4,7 @@ published: 2025-12-13T00:00:00
 description: '"此贴仅用于 统计 页面的打字机特效"'
 updated: ""
 tags:
-  - Tag
+  - 好词好句
 draft: false
 pin: 0
 toc: false
