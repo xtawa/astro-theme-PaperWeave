@@ -16,7 +16,8 @@ share: true
 ---
 ==Homepage==
 
-![image.png](https://dav1.xtyin.com/image.png)
+![homepage](https://dav1.xtyin.com/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202025-12-13%20212931.png)
+
 
 ==Casual Page==
 
