@@ -1,0 +1,85 @@
+---
+import { allLocales } from '@/config'
+import { getLangFromLocale, getLangRouteParam } from '@/i18n/lang'
+import { ui } from '@/i18n/ui'
+import Layout from '@/layouts/Layout.astro'
+
+export async function getStaticPaths() {
+  return allLocales.map(lang => ({
+    params: { lang: getLangRouteParam(lang) },
+  }))
+}
+
+const currentLang = getLangFromLocale(Astro.currentLocale)
+const currentUI = ui[currentLang as keyof typeof ui] ?? {}
+---
+
+<Layout>
+  <!-- Decorative Line -->
+  <div class="uno-decorative-line" />
+  
+  <div class="heti mb-12">
+    <h1>{currentUI.search}</h1>
+  </div>
+
+  <div class="max-w-[var(--content-width)] mx-auto px-4 sm:px-0">
+    <div id="search"></div>
+  </div>
+
+  <link href="/pagefind/pagefind-ui.css" rel="stylesheet">
+  <script src="/pagefind/pagefind-ui.js" is:inline></script>
+
+  <script is:inline>
+    window.addEventListener('DOMContentLoaded', () => {
+      new PagefindUI({ 
+        element: "#search", 
+        showSubResults: true,
+        showImages: false,
+        translations: {
+            placeholder: "Type to search...",
+            clear_search: "Clear",
+            load_more: "Load more results",
+            search_label: "Search this site",
+            filters_label: "Filters",
+            zero_results: "No results for [SEARCH_TERM]",
+            many_results: "[COUNT] results for [SEARCH_TERM]",
+            one_result: "[COUNT] result for [SEARCH_TERM]",
+            alt_search: "No results for [SEARCH_TERM]. Showing results for [DIFFERENT_TERM] instead",
+            search_suggestion: "Searching for [SEARCH_TERM]",
+            searching: "Searching for [SEARCH_TERM]..."
+        }
+      });
+    });
+  </script>
+
+  <style is:global>
+    :root {
+      --pagefind-ui-scale: 0.9;
+      --pagefind-ui-primary: var(--md-sys-color-primary, #6750A4);
+      --pagefind-ui-text: var(--md-sys-color-on-background, #1c1b1f);
+      --pagefind-ui-background: transparent;
+      --pagefind-ui-border: var(--md-sys-color-outline-variant, #cac4d0);
+      --pagefind-ui-tag: var(--md-sys-color-secondary-container, #e8def8);
+      --pagefind-ui-border-width: 1px;
+      --pagefind-ui-border-radius: 4px;
+      --pagefind-ui-image-border-radius: 4px;
+      --pagefind-ui-image-box-ratio: 3 / 2;
+      --pagefind-ui-font: "Snell-Black", "EarlySummer-Subset", "EarlySummer", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    }
+    
+    .pagefind-ui__search-input {
+      background-color: transparent !important;
+      border-bottom: 2px solid var(--md-sys-color-primary, #6750A4) !important;
+      border-top: none !important;
+      border-left: none !important;
+      border-right: none !important;
+      border-radius: 0 !important;
+      padding-left: 0 !important;
+      font-weight: bold;
+    }
+    
+    .pagefind-ui__result-excerpt {
+        font-family: var(--pagefind-ui-font);
+    }
+  </style>
+</Layout>

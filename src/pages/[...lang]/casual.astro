@@ -16,8 +16,6 @@ const allCasualEntries = await getCollection('casual')
 const casualEntry = allCasualEntries.find(entry => entry.data.lang === currentLang)
   ?? allCasualEntries.find(entry => entry.data.lang === '')
 const { Content } = casualEntry ? await render(casualEntry) : { Content: null }
-
-import casualPostsStatic from '@/data/casual.json'
 ---
 
 <Layout>
@@ -59,47 +57,90 @@ import casualPostsStatic from '@/data/casual.json'
 </Layout>
 
 <script>
-  let allPostsData = [];
-  let activeTag = null;
+  // Define types for better code assistance (optional in vanilla JS but good for structure)
+  interface CasualCache {
+    data: any[];
+    timestamp: number;
+  }
 
-  async function loadCasualPosts() {
+  declare global {
+    interface Window {
+      __CASUAL_CACHE__?: CasualCache;
+    }
+  }
+
+  // Main logic wrapper to support View Transitions
+  function initCasualPage() {
     const container = document.getElementById('casual-container');
     const tagsContainer = document.getElementById('casual-tags');
     const loading = document.getElementById('casual-loading');
     const error = document.getElementById('casual-error');
 
+    // Only run if we are on the casual page
     if (!container || !loading) return;
 
-    try {
-      // Try fetching with trailing slash first due to trailingSlash: 'always' config
-      let response = await fetch('/api/casual/');
-      
-      // If 404, try without slash (just in case)
-      if (response.status === 404) {
-        response = await fetch('/api/casual');
-      }
+    let allPostsData: any[] = [];
 
-      if (!response.ok) throw new Error(`Network response was not ok: ${response.status}`);
+    // Check Cache
+    if (window.__CASUAL_CACHE__ && window.__CASUAL_CACHE__.data.length > 0) {
+      // Use cached data
+      console.log('Using cached casual posts');
+      allPostsData = window.__CASUAL_CACHE__.data;
+      if (loading) loading.style.display = 'none'; // Hide loader immediately
+      renderPage(allPostsData);
+    } else {
+      // Fetch data
+      fetchData();
+    }
+
+    async function fetchData() {
+      try {
+        // Try fetching with trailing slash first due to trailingSlash: 'always' config
+        let response = await fetch('/api/casual/');
+        
+        // If 404, try without slash (just in case)
+        if (response.status === 404) {
+          response = await fetch('/api/casual');
+        }
+
+        if (!response.ok) throw new Error(`Network response was not ok: ${response.status}`);
+        
+        const posts = await response.json();
+        allPostsData = posts;
+        
+        // Save to Cache
+        window.__CASUAL_CACHE__ = {
+          data: posts,
+          timestamp: Date.now()
+        };
+
+        if (loading) loading.style.display = 'none';
+        renderPage(posts, true); // Animate only on first fetch
+
+      } catch (err) {
+        console.error('Failed to load casual posts:', err);
+        if (loading) loading.style.display = 'none';
+        if (error) error.classList.remove('hidden');
+      }
+    }
+
+    function renderPage(posts: any[], animate: boolean = false) {
+      if (!container || !tagsContainer) return;
       
-      const posts = await response.json();
-      allPostsData = posts;
-      
-      // Clear container just in case
+      // Clear container
       container.innerHTML = '';
       
       if (posts.length === 0) {
           container.innerHTML = '<div class="text-center opacity-50">No updates found.</div>';
       }
 
-      // Extract Tags
+      // 1. Process and Render Tags
       const tagCounts = new Map();
       posts.forEach((post: any) => {
-        // Remove HTML tags to get raw text for tag extraction
+        // Extract tags logic...
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = post.content;
         const rawText = tempDiv.textContent || '';
-        
-        // Regex to match tags: #Tag (supports unicode for Chinese etc.)
         const tags = (rawText.match(/#[\p{L}\p{N}_]+/gu) || []).map((t: string) => t.substring(1));
         post.tags = tags; 
         
@@ -108,8 +149,7 @@ import casualPostsStatic from '@/data/casual.json'
         });
       });
 
-      // Render Tags Filter Buttons
-      if (tagCounts.size > 0 && tagsContainer) {
+      if (tagCounts.size > 0) {
         const sortedTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
         
         let tagsHtml = `<button data-tag="__all__" class="px-3 py-1 text-sm rounded-full transition-colors bg-primary text-white font-bold">All</button>`;
@@ -121,7 +161,6 @@ import casualPostsStatic from '@/data/casual.json'
         tagsContainer.innerHTML = tagsHtml;
         tagsContainer.classList.remove('hidden');
 
-        // Add Event Listeners for Filter Buttons
         tagsContainer.querySelectorAll('button').forEach(btn => {
           btn.addEventListener('click', (e) => {
             const target = e.currentTarget as HTMLButtonElement;
@@ -131,23 +170,13 @@ import casualPostsStatic from '@/data/casual.json'
         });
       }
 
-      renderPosts(posts, true);
-
-      loading.style.display = 'none';
+      // 2. Render Posts
+      renderPostsList(posts, animate);
       container.classList.remove('hidden');
-
-    } catch (err) {
-      console.error('Failed to load casual posts:', err);
-      loading.style.display = 'none';
-      if (error) error.classList.remove('hidden');
     }
-  }
 
-  function setActiveTag(tag: string) {
-      const tagsContainer = document.getElementById('casual-tags');
+    function setActiveTag(tag: string) {
       if (!tagsContainer) return;
-
-      // Update UI
       tagsContainer.querySelectorAll('button').forEach(b => {
           if (b.dataset.tag === tag) {
               b.className = 'px-3 py-1 text-sm rounded-full transition-colors bg-primary text-white font-bold';
@@ -156,20 +185,23 @@ import casualPostsStatic from '@/data/casual.json'
           }
       });
       
-      filterPosts(tag === '__all__' ? null : tag);
-  }
-
-  function renderPosts(posts: any[], animate: boolean = false) {
-    const container = document.getElementById('casual-container');
-    if(!container) return;
-    container.innerHTML = '';
-
-    if (posts.length === 0) {
-       container.innerHTML = '<div class="text-center opacity-50 py-8">No posts found with this tag.</div>';
-       return;
+      const filtered = tag === '__all__' 
+        ? allPostsData
+        : allPostsData.filter((p: any) => p.tags && p.tags.includes(tag));
+      
+      renderPostsList(filtered, false);
     }
 
-    posts.forEach((post: any) => {
+    function renderPostsList(posts: any[], animate: boolean) {
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (posts.length === 0) {
+         container.innerHTML = '<div class="text-center opacity-50 py-8">No posts found with this tag.</div>';
+         return;
+      }
+
+      posts.forEach((post: any) => {
         const article = document.createElement('article');
         const animationClass = animate ? 'animate-fade-in' : '';
         article.className = `relative pl-6 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-[2px] before:bg-primary/30 ${animationClass}`;
@@ -185,27 +217,21 @@ import casualPostsStatic from '@/data/casual.json'
              imagesHtml = `<div class="mt-4 grid gap-2 ${gridClass}">${imgs}</div>`;
         }
 
-        // Clean content: Remove tags (#tag) from display
+        // Clean content logic
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = post.content;
-
-        // 1. Remove <a> tags that are hashtags (Telegram usually links tags)
         tempDiv.querySelectorAll('a').forEach(a => {
             if (a.textContent && /^#[\p{L}\p{N}_]+$/u.test(a.textContent.trim())) {
                 a.remove();
             }
         });
-
-        // 2. Remove plain text hashtags from text nodes
         const walker = document.createTreeWalker(tempDiv, NodeFilter.SHOW_TEXT);
         let node;
         while (node = walker.nextNode()) {
             if (node.nodeValue) {
-                // Replace #tag with empty string
                 node.nodeValue = node.nodeValue.replace(/#[\p{L}\p{N}_]+/gu, '');
             }
         }
-        
         const contentHtml = tempDiv.innerHTML;
 
         article.innerHTML = `
@@ -218,15 +244,12 @@ import casualPostsStatic from '@/data/casual.json'
         
         container.appendChild(article);
       });
+    }
   }
 
-  function filterPosts(tag: string | null) {
-    const filtered = tag 
-      ? allPostsData.filter((p: any) => p.tags && p.tags.includes(tag))
-      : allPostsData;
-    renderPosts(filtered, false);
-  }
+  // Run on initial load
+  initCasualPage();
 
-  // Load on mount
-  loadCasualPosts();
+  // Run on view transitions navigation
+  document.addEventListener('astro:page-load', initCasualPage);
 </script>

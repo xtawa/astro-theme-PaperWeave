@@ -8,6 +8,8 @@ interface Translation {
   tags: string
   about: string
   casual: string
+  search: string
+  timeline: string
   toc: string
 }
 
@@ -20,6 +22,8 @@ export const ui: Record<Language, Translation> = {
     tags: 'Schlagwörter',
     about: 'Über',
     casual: 'Gedanken',
+    search: 'Suche',
+    timeline: 'Zeitleiste',
     toc: 'Inhaltsverzeichnis',
   },
   'en': {
@@ -30,6 +34,8 @@ export const ui: Record<Language, Translation> = {
     tags: 'Tags',
     about: 'About',
     casual: 'Casual',
+    search: 'Search',
+    timeline: 'Timeline',
     toc: 'Table of Contents',
   },
   'es': {
@@ -40,6 +46,8 @@ export const ui: Record<Language, Translation> = {
     tags: 'Etiquetas',
     about: 'Sobre',
     casual: 'Pensamientos',
+    search: 'Buscar',
+    timeline: 'Línea de tiempo',
     toc: 'Índice',
   },
   'fr': {
@@ -50,6 +58,8 @@ export const ui: Record<Language, Translation> = {
     tags: 'Étiquettes',
     about: 'À propos',
     casual: 'Pensées',
+    search: 'Rechercher',
+    timeline: 'Chronologie',
     toc: 'Table des matières',
   },
   'ja': {
@@ -60,6 +70,8 @@ export const ui: Record<Language, Translation> = {
     tags: 'タグ',
     about: '概要',
     casual: '随想',
+    search: '検索',
+    timeline: 'タイムライン',
     toc: '目次',
   },
   'ko': {
@@ -70,6 +82,8 @@ export const ui: Record<Language, Translation> = {
     tags: '태그',
     about: '소개',
     casual: '단상',
+    search: '검색',
+    timeline: '타임라인',
     toc: '목차',
   },
   'pl': {
@@ -80,6 +94,8 @@ export const ui: Record<Language, Translation> = {
     tags: 'Tagi',
     about: 'O stronie',
     casual: 'Myśli',
+    search: 'Szukaj',
+    timeline: 'Oś czasu',
     toc: 'Spis treści',
   },
   'pt': {
@@ -90,6 +106,8 @@ export const ui: Record<Language, Translation> = {
     tags: 'Tags',
     about: 'Sobre',
     casual: 'Pensamentos',
+    search: 'Procurar',
+    timeline: 'Linha do tempo',
     toc: 'Sumário',
   },
   'ru': {
@@ -100,6 +118,8 @@ export const ui: Record<Language, Translation> = {
     tags: 'Теги',
     about: 'О себе',
     casual: 'Мысли',
+    search: 'Поиск',
+    timeline: 'Хронология',
     toc: 'Оглавление',
   },
   'zh': {
@@ -110,6 +130,8 @@ export const ui: Record<Language, Translation> = {
     tags: '标签',
     about: '关于',
     casual: '随心说',
+    search: '搜索',
+    timeline: '时间轴',
     toc: '目录',
   },
   'zh-tw': {
@@ -120,6 +142,8 @@ export const ui: Record<Language, Translation> = {
     tags: '標籤',
     about: '關於',
     casual: '隨心說',
+    search: '搜尋',
+    timeline: '時間軸',
     toc: '目錄',
   },
 }

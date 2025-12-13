@@ -44,14 +44,26 @@ export async function GET() {
     const posts: CasualPost[] = []
 
     for (const msg of messages) {
+      // Skip service messages (like "Channel created", dates, etc.) which usually lack the standard message structure
+      // or have specific service classes.
+      // In the public web view, "Channel created" might appear as a service message.
+      if (msg.querySelector('.tgme_widget_message_service_photo') || msg.classList.contains('service_message')) {
+          continue;
+      }
+
       const textElement = msg.querySelector('.tgme_widget_message_text')
       const timeElement = msg.querySelector('.tgme_widget_message_date time')
       const linkElement = msg.querySelector('.tgme_widget_message_date')
       const imageElements = msg.querySelectorAll('.tgme_widget_message_photo_wrap')
 
+      // Filter out empty messages
       if (!textElement && imageElements.length === 0) continue
 
       const content = textElement ? textElement.innerHTML : ''
+      
+      // Explicitly filter "Channel created" if it somehow gets parsed as text
+      if (content.toLowerCase().includes('channel created')) continue;
+
       const date = timeElement ? timeElement.getAttribute('datetime') || '' : ''
       const link = linkElement ? linkElement.getAttribute('href') || '' : ''
       const timestamp = date ? new Date(date).getTime() : 0

@@ -2,6 +2,10 @@
 dist/
 .output/
 .astro/
+.vercel/
+
+# data cache
+src/data/
 
 # dependencies
 node_modules/

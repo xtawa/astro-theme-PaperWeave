@@ -9,10 +9,14 @@ interface Props {
   postTitle?: string
   postDescription?: string
   postSlug?: string
+  title?: string
+  description?: string
+  image?: string
+  post?: any
 }
 
 // Props and Language
-const { postTitle, postDescription, postSlug } = Astro.props
+const { postTitle, postDescription, postSlug, title: propTitle, description: propDesc, image: propImage, post } = Astro.props
 const { currentLang } = getPageInfo(Astro.url.pathname)
 const currentUI = ui[currentLang as keyof typeof ui] ?? {}
 const lang = currentLang === defaultLocale ? '' : `${currentLang}/`
@@ -31,14 +35,18 @@ const siteTitle = i18nTitle ? currentUI.title : title
 const siteSubtitle = i18nTitle ? currentUI.subtitle : subtitle
 const siteDescription = i18nTitle ? currentUI.description : description
 
-// Page Metadata
-const pageTitle = postTitle ? `${postTitle} | ${siteTitle}` : `${siteTitle} - ${siteSubtitle}`
-const pageDescription = postDescription || siteDescription
-const pageImage = postSlug
-  ? new URL(`${base}/og/${postSlug}.png`, Astro.url.origin)
+// Resolve Page Metadata
+const finalPostTitle = propTitle || postTitle || post?.data?.title
+const finalPostSlug = postSlug || post?.id || post?.data?.abbrlink
+const finalPostDesc = propDesc || postDescription || post?.data?.description
+
+const pageTitle = finalPostTitle ? `${finalPostTitle} | ${siteTitle}` : `${siteTitle} - ${siteSubtitle}`
+const pageDescription = finalPostDesc || siteDescription
+const pageImage = propImage || (finalPostSlug
+  ? new URL(`${base}/og/${finalPostSlug}.png`, Astro.url.origin)
   : apiflashKey
     ? `https://api.apiflash.com/v1/urltoimage?access_key=${apiflashKey}&url=${Astro.url}&format=png&width=1500&height=788&ttl=259200&wait_until=network_idle&no_tracking=true`
-    : `https://api.apiflash.com/v1/urltoimage?access_key=02a837b6188f4ba0a7fd9fbeff03a83e&url=https://retypeset.radishzz.cc/${lang}&format=png&width=1500&height=788&ttl=604800&wait_until=network_idle&no_tracking=true`
+    : `https://api.apiflash.com/v1/urltoimage?access_key=02a837b6188f4ba0a7fd9fbeff03a83e&url=https://retypeset.radishzz.cc/${lang}&format=png&width=1500&height=788&ttl=604800&wait_until=network_idle&no_tracking=true`)
 ---
 
 <head>
