@@ -16,16 +16,15 @@ share: true
 ---
 ==Homepage==
 
-![homepage](https://dav1.xtyin.com/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202025-12-13%20212931.png)
-
+![homepage.png](https://dav1.xtyin.com/homepage.png)
 
 ==Casual Page==
 
-![casual_ui](https://dav1.xtyin.com/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202025-12-13%20213002.png)
+![casual.png](https://dav1.xtyin.com/casual.png)
 
 ==Statistics Page==
 
-![stats](https://dav1.xtyin.com/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202025-12-13%20213312.png)
+![stats.png](https://dav1.xtyin.com/stats.png)
 
 ## 介绍
 
