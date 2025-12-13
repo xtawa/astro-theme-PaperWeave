@@ -6,7 +6,7 @@
   "repository": "https://github.com/radishzzz/astro-theme-retypeset",
   "scripts": {
     "dev": "astro check && astro dev",
-    "build": "astro check && astro build && pnpm apply-lqip && pagefind --site .vercel/output/static",
+    "build": "astro check && astro build && pnpm apply-lqip && pagefind --site .vercel/output/static --output-path public/pagefind",
     "preview": "astro preview",
     "astro": "astro",
     "lint": "eslint .",
