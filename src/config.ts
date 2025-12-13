@@ -187,7 +187,7 @@ export const themeConfig: ThemeConfig = {
   preload: {
     // image hosting url
     // optimize remote images and generate low-quality placeholders
-    imageHostURL: 'dev1.xtyin.com',
+    imageHostURL: 'dav1.xtyin.com',
     // custom google analytics js
     // for users who proxy tracking scripts to a custom domain
     // see https://gist.github.com/xiaopc/0602f06ca465d76bd9efd3dda9393738
@@ -202,7 +202,7 @@ export const themeConfig: ThemeConfig = {
       enabled: true,
       appId: 'XG9J7TBGD8',
       apiKey: '5e7da999c5375ffc89f0dc6d38a81570',
-      indexName: 'blog_xtyin',
+      indexName: 'blog_xtyin_pages',
     },
   },  
   // PRELOAD SETTINGS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END
