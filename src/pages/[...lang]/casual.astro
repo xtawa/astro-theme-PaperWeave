@@ -75,19 +75,26 @@ const { Content } = casualEntry ? await render(casualEntry) : { Content: null }
     const tagsContainer = document.getElementById('casual-tags');
     const loading = document.getElementById('casual-loading');
     const error = document.getElementById('casual-error');
+    
+    // Pagination Controls Container (will be created dynamically)
+    let paginationContainer = document.getElementById('casual-pagination');
 
     // Only run if we are on the casual page
     if (!container || !loading) return;
 
     let allPostsData: any[] = [];
+    let currentFilteredPosts: any[] = [];
+    let currentPage = 1;
+    const pageSize = 10;
 
     // Check Cache
     if (window.__CASUAL_CACHE__ && window.__CASUAL_CACHE__.data.length > 0) {
       // Use cached data
       console.log('Using cached casual posts');
       allPostsData = window.__CASUAL_CACHE__.data;
+      currentFilteredPosts = allPostsData;
       if (loading) loading.style.display = 'none'; // Hide loader immediately
-      renderPage(allPostsData);
+      renderPage();
     } else {
       // Fetch data
       fetchData();
@@ -107,6 +114,7 @@ const { Content } = casualEntry ? await render(casualEntry) : { Content: null }
         
         const posts = await response.json();
         allPostsData = posts;
+        currentFilteredPosts = posts;
         
         // Save to Cache
         window.__CASUAL_CACHE__ = {
@@ -115,7 +123,7 @@ const { Content } = casualEntry ? await render(casualEntry) : { Content: null }
         };
 
         if (loading) loading.style.display = 'none';
-        renderPage(posts, true); // Animate only on first fetch
+        renderPage(true); // Animate only on first fetch
 
       } catch (err) {
         console.error('Failed to load casual posts:', err);
@@ -124,19 +132,16 @@ const { Content } = casualEntry ? await render(casualEntry) : { Content: null }
       }
     }
 
-    function renderPage(posts: any[], animate: boolean = false) {
+    function renderPage(animate: boolean = false) {
       if (!container || !tagsContainer) return;
       
-      // Clear container
+      // Clear container (will be refilled by renderPostsList)
       container.innerHTML = '';
       
-      if (posts.length === 0) {
-          container.innerHTML = '<div class="text-center opacity-50">No updates found.</div>';
-      }
-
-      // 1. Process and Render Tags
+      // 1. Process and Render Tags (Only once or when data changes, but here we do it on init)
+      // Note: We use allPostsData for tag counts to show global stats
       const tagCounts = new Map();
-      posts.forEach((post: any) => {
+      allPostsData.forEach((post: any) => {
         // Extract tags logic...
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = post.content;
@@ -148,6 +153,8 @@ const { Content } = casualEntry ? await render(casualEntry) : { Content: null }
           tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
         });
       });
+
+      console.log('Extracted tags:', tagCounts); // Debug log
 
       if (tagCounts.size > 0) {
         const sortedTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
@@ -168,10 +175,13 @@ const { Content } = casualEntry ? await render(casualEntry) : { Content: null }
             setActiveTag(tag || '__all__');
           });
         });
+      } else {
+          console.log('No tags found in posts.');
+          tagsContainer.classList.add('hidden');
       }
 
       // 2. Render Posts
-      renderPostsList(posts, animate);
+      renderPostsList(animate);
       container.classList.remove('hidden');
     }
 
@@ -185,23 +195,32 @@ const { Content } = casualEntry ? await render(casualEntry) : { Content: null }
           }
       });
       
-      const filtered = tag === '__all__' 
+      // Filter logic
+      currentFilteredPosts = tag === '__all__' 
         ? allPostsData
         : allPostsData.filter((p: any) => p.tags && p.tags.includes(tag));
       
-      renderPostsList(filtered, false);
+      // Reset to page 1 on filter change
+      currentPage = 1;
+      renderPostsList(false);
     }
 
-    function renderPostsList(posts: any[], animate: boolean) {
+    function renderPostsList(animate: boolean) {
       if (!container) return;
       container.innerHTML = '';
 
-      if (posts.length === 0) {
-         container.innerHTML = '<div class="text-center opacity-50 py-8">No posts found with this tag.</div>';
+      if (currentFilteredPosts.length === 0) {
+         container.innerHTML = '<div class="text-center opacity-50 py-8">No posts found.</div>';
+         renderPaginationControls(); // Update (hide) pagination
          return;
       }
 
-      posts.forEach((post: any) => {
+      // Pagination Slice
+      const startIndex = (currentPage - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
+      const postsToShow = currentFilteredPosts.slice(startIndex, endIndex);
+
+      postsToShow.forEach((post: any) => {
         const article = document.createElement('article');
         const animationClass = animate ? 'animate-fade-in' : '';
         article.className = `relative pl-6 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-[2px] before:bg-primary/30 ${animationClass}`;
@@ -212,7 +231,7 @@ const { Content } = casualEntry ? await render(casualEntry) : { Content: null }
         if (post.images && post.images.length > 0) {
              const gridClass = post.images.length === 1 ? 'grid-cols-1' : 'grid-cols-2';
              const imgs = post.images.map((img: string) => 
-               `<img src="${img}" alt="" loading="lazy" class="rounded-lg w-full h-auto object-cover max-h-96 border border-gray-100 dark:border-gray-800" />`
+               `<img src="${img}" alt="" loading="lazy" class="rounded-lg w-full h-auto border border-gray-100 dark:border-gray-800 block" />`
              ).join('');
              imagesHtml = `<div class="mt-4 grid gap-2 ${gridClass}">${imgs}</div>`;
         }
@@ -244,6 +263,55 @@ const { Content } = casualEntry ? await render(casualEntry) : { Content: null }
         
         container.appendChild(article);
       });
+
+      renderPaginationControls();
+    }
+
+    function renderPaginationControls() {
+      // Remove existing pagination if any
+      const existingPagination = document.getElementById('casual-pagination-controls');
+      if (existingPagination) existingPagination.remove();
+
+      const totalPages = Math.ceil(currentFilteredPosts.length / pageSize);
+      if (totalPages <= 1) return;
+
+      const nav = document.createElement('nav');
+      nav.id = 'casual-pagination-controls';
+      nav.className = 'flex justify-center gap-4 mt-12';
+      
+      const prevBtn = document.createElement('button');
+      prevBtn.textContent = '← Prev';
+      prevBtn.className = `px-4 py-2 rounded-lg transition-colors ${currentPage === 1 ? 'opacity-50 cursor-not-allowed text-gray-400' : 'hover:bg-primary/10 text-primary'}`;
+      prevBtn.disabled = currentPage === 1;
+      prevBtn.onclick = () => {
+        if (currentPage > 1) {
+          currentPage--;
+          renderPostsList(false);
+          document.getElementById('casual-tags')?.scrollIntoView({ behavior: 'smooth' });
+        }
+      };
+
+      const nextBtn = document.createElement('button');
+      nextBtn.textContent = 'Next →';
+      nextBtn.className = `px-4 py-2 rounded-lg transition-colors ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed text-gray-400' : 'hover:bg-primary/10 text-primary'}`;
+      nextBtn.disabled = currentPage === totalPages;
+      nextBtn.onclick = () => {
+        if (currentPage < totalPages) {
+          currentPage++;
+          renderPostsList(false);
+          document.getElementById('casual-tags')?.scrollIntoView({ behavior: 'smooth' });
+        }
+      };
+
+      const info = document.createElement('span');
+      info.className = 'self-center text-sm text-gray-500 font-mono';
+      info.textContent = `${currentPage} / ${totalPages}`;
+
+      nav.appendChild(prevBtn);
+      nav.appendChild(info);
+      nav.appendChild(nextBtn);
+
+      container?.after(nav);
     }
   }
 

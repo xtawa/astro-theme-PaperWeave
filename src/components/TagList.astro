@@ -11,27 +11,18 @@ interface Props {
 const { tags, currentTag = '', lang } = Astro.props
 ---
 
-<div class="no-heti flex flex-wrap gap-x-3 gap-y-3.2">
+<div class="no-heti flex flex-wrap gap-3">
   {tags.map(tag => (
     <a
       href={getTagPath(tag, lang)}
       class:list={[
-        'relative inline-block border border-secondary/25 rounded-full px-3.2 py-0.7 ring-secondary/80',
-        'transition-[colors,box-shadow] ease-out hover:(border-secondary/80 c-primary font-medium ring-0.2)',
+        'px-4 py-2 text-sm rounded-full transition-all shadow-sm border font-medium',
         currentTag === tag
-          ? 'border-secondary/80 c-primary font-medium ring-0.2'
-          : 'ring-0',
+          ? 'bg-primary text-white border-primary'
+          : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-primary/50 hover:text-primary',
       ]}
     >
-      <span class="absolute inset-0 flex items-center justify-center whitespace-nowrap transition-font-weight">
-        {tag}
-      </span>
-      <span
-        class="inline-block font-medium opacity-0"
-        aria-hidden="true"
-      >
-        {tag}
-      </span>
+      {tag}
     </a>
   ))}
 </div>
