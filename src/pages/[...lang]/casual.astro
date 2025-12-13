@@ -76,9 +76,6 @@ const { Content } = casualEntry ? await render(casualEntry) : { Content: null }
     const loading = document.getElementById('casual-loading');
     const error = document.getElementById('casual-error');
     
-    // Pagination Controls Container (will be created dynamically)
-    let paginationContainer = document.getElementById('casual-pagination');
-
     // Only run if we are on the casual page
     if (!container || !loading) return;
 

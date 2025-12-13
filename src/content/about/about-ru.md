@@ -2,4 +2,4 @@
 lang: ru
 ---
 
-Retypeset — это статическая тема блога, основанная на фреймворке [Astro](https://astro.build/). Вдохновленная [Typography](https://astro-theme-typography.vercel.app/), Retypeset устанавливает новый визуальный стандарт и переосмысливает компоновку всех страниц, создавая опыт чтения, напоминающий печатные книги, возрождая красоту типографики. Детали в каждом взгляде, элегантность в каждом пространстве.
+Sorry, this site doesn't support i18n yet. I'll try my best to add it as soon as I can. Thanks for understanding!

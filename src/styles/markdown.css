@@ -56,7 +56,7 @@
 
 /* Images */
 .heti :where(img:not(.no-heti):not(.no-heti *)) {
-  --at-apply: 'mx-auto cursor-zoom-in';
+  --at-apply: 'cursor-zoom-in';
 }
 .heti :where(img:not(figure img):not(.no-heti):not(.no-heti *)) {
   --at-apply: 'my-6';

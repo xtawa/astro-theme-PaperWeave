@@ -141,7 +141,7 @@ function formatNumber(num: number) {
   </div>
 </Layout>
 
-<script define:vars={{ quote: randomQuote.text }}>
+<script is:inline define:vars={{ quote: randomQuote.text }}>
     let typewriterTimeout;
 
     function initTypewriter() {
