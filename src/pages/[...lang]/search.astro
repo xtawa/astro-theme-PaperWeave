@@ -42,8 +42,15 @@ const isAlgoliaEnabled = algoliaConfig?.enabled && algoliaConfig.appId && algoli
       <script is:inline define:vars={{ appId: algoliaConfig!.appId, apiKey: algoliaConfig!.apiKey, indexName: algoliaConfig!.indexName }}>
         function initDocSearch() {
           const container = document.getElementById('docsearch');
-          // Check if container exists and docsearch is loaded
-          if (!container || typeof docsearch === 'undefined') return;
+          // Check if container exists
+          if (!container) return;
+          
+          // Check if docsearch is loaded
+          if (typeof docsearch === 'undefined') {
+            console.warn('DocSearch not loaded yet, retrying in 100ms...');
+            setTimeout(initDocSearch, 100);
+            return;
+          }
           
           // Clear container to prevent duplicates
           container.innerHTML = '';
@@ -67,6 +74,7 @@ const isAlgoliaEnabled = algoliaConfig?.enabled && algoliaConfig.appId && algoli
           script.id = 'docsearch-script';
           script.src = 'https://cdn.jsdelivr.net/npm/@docsearch/js@3';
           script.onload = initDocSearch;
+          script.onerror = (e) => console.error('Failed to load DocSearch script:', e);
           document.head.appendChild(script);
         } else {
           // If script exists, initialize immediately
