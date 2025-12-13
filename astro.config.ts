@@ -15,29 +15,23 @@ import { langMap } from './src/i18n/config'
 import { rehypeCodeCopyButton } from './src/plugins/rehype-code-copy-button.mjs'
 import { rehypeExternalLinks } from './src/plugins/rehype-external-links.mjs'
 import { rehypeHeadingAnchor } from './src/plugins/rehype-heading-anchor.mjs'
-// import { rehypeImageProcessor } from './src/plugins/rehype-image-processor.mjs' // 已停用
+// import { rehypeImageProcessor } from './src/plugins/rehype-image-processor.mjs' // ✅ 已停用
 import { remarkContainerDirectives } from './src/plugins/remark-container-directives.mjs'
 import { remarkLeafDirectives } from './src/plugins/remark-leaf-directives.mjs'
 import { remarkReadingTime } from './src/plugins/remark-reading-time.mjs'
-import { visit } from 'unist-util-visit' // 引入工具库
+import { visit } from 'unist-util-visit'
 
-// --- ✨ 新增：自定义插件，专门处理 Obsidian 图片 ---
+// --- ✨ 修复版：Obsidian 图片自动替换插件 ---
 function remarkFixObsidianImages() {
-  return (tree) => {
+  // ✅ 修复 1: 给 tree 参数加上 : any 类型，解决 ts(7006) 报错
+  return (tree: any) => {
     visit(tree, 'image', (node, index, parent) => {
-      // 检查图片 URL 是否包含你的 WebDAV 域名
       if (node.url && node.url.includes('dav1.xtyin.com')) {
-        // 1. 修复空格和中文导致的解析错误 (encodeURI)
         const safeUrl = encodeURI(node.url)
-        
-        // 2. 将 Markdown 图片节点替换为纯 HTML 节点
-        // 这样 Astro 就不会尝试去下载或优化它，直接渲染
         const htmlNode = {
           type: 'html',
           value: `<img src="${safeUrl}" alt="${node.alt || ''}" loading="lazy" style="max-width: 100%; height: auto;" />`
         }
-
-        // 替换掉原有的节点
         parent.children.splice(index, 1, htmlNode)
       }
     })
@@ -64,9 +58,11 @@ export default defineConfig({
   i18n: {
     locales: Object.entries(langMap).map(([path, codes]) => ({
       path,
-      codes: [...codes],
+      // ✅ 恢复原有的类型断言，防止潜在的类型推断错误
+      codes: [...codes] as [string, ...string[]],
     })),
-    defaultLocale,
+    // ✅ 修复 2: 强制断言 defaultLocale 为 any，解决 ts(2322) 类型不匹配报错
+    defaultLocale: defaultLocale as any,
   },
   integrations: [
     UnoCSS({
@@ -89,8 +85,7 @@ export default defineConfig({
   ],
   markdown: {
     remarkPlugins: [
-      // 注册新插件
-      remarkFixObsidianImages, 
+      remarkFixObsidianImages, // 自定义插件
       remarkDirective,
       remarkMath,
       remarkContainerDirectives,
@@ -102,7 +97,7 @@ export default defineConfig({
       [rehypeMermaid, { strategy: 'pre-mermaid' }],
       rehypeSlug,
       rehypeHeadingAnchor,
-      // rehypeImageProcessor, // 确保这个继续保持注释状态
+      // rehypeImageProcessor, // ！
       rehypeExternalLinks,
       rehypeCodeCopyButton,
     ],
