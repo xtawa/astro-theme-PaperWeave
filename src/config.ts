@@ -171,7 +171,7 @@ export const themeConfig: ThemeConfig = {
       },
       {
         name: 'Email',
-        url: 'email@radishzz.cc',
+        url: 'mailto:zeromostia@gmail.com',
       },
       {
         name: 'X',
@@ -187,7 +187,7 @@ export const themeConfig: ThemeConfig = {
   preload: {
     // image hosting url
     // optimize remote images and generate low-quality placeholders
-    imageHostURL: 'r2.xtyin.com',
+    imageHostURL: 'dev1.xtyin.com',
     // custom google analytics js
     // for users who proxy tracking scripts to a custom domain
     // see https://gist.github.com/xiaopc/0602f06ca465d76bd9efd3dda9393738
