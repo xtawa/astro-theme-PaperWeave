@@ -142,51 +142,49 @@ function formatNumber(num: number) {
 </Layout>
 
 <script is:inline define:vars={{ quote: randomQuote.text }}>
-    let typewriterTimeout;
+    (() => {
+        let typewriterTimeout;
 
-    function initTypewriter() {
-        const textElement = document.getElementById('typewriter-text');
-        const sourceElement = document.getElementById('typewriter-source');
-        
-        // If elements don't exist (e.g. navigated away), stop
-        if (!textElement || !sourceElement) return;
+        function initTypewriter() {
+            const textElement = document.getElementById('typewriter-text');
+            const sourceElement = document.getElementById('typewriter-source');
+            
+            if (!textElement || !sourceElement) return;
 
-        // Reset
-        clearTimeout(typewriterTimeout);
-        textElement.textContent = '';
-        sourceElement.classList.add('opacity-0');
-        
-        const text = quote || "Reading is a journey.";
-        let index = 0;
-        
-        function type() {
-            // Check existence again in case user navigated away during typing
-            if (!document.getElementById('typewriter-text')) return;
+            clearTimeout(typewriterTimeout);
+            textElement.textContent = '';
+            sourceElement.classList.add('opacity-0');
+            
+            const text = quote || "Reading is a journey.";
+            let index = 0;
+            
+            function type() {
+                if (!document.getElementById('typewriter-text')) return;
 
-            if (index < text.length) {
-                textElement.textContent += text.charAt(index);
-                index++;
-                const delay = Math.random() * 70 + 30; 
-                typewriterTimeout = setTimeout(type, delay);
-            } else {
-                if (sourceElement) {
-                    sourceElement.classList.remove('opacity-0');
+                if (index < text.length) {
+                    textElement.textContent += text.charAt(index);
+                    index++;
+                    const delay = Math.random() * 70 + 30; 
+                    typewriterTimeout = setTimeout(type, delay);
+                } else {
+                    if (sourceElement) {
+                        sourceElement.classList.remove('opacity-0');
+                    }
                 }
             }
+
+            typewriterTimeout = setTimeout(type, 500);
         }
 
-        // Start typing
-        typewriterTimeout = setTimeout(type, 500);
-    }
+        function cleanup() {
+            clearTimeout(typewriterTimeout);
+            document.removeEventListener('astro:before-swap', cleanup);
+        }
 
-    // Run on initial load
-    // initTypewriter(); // Removed to prevent double execution with astro:page-load
+        // Initialize immediately
+        initTypewriter();
 
-    // Run on view transitions navigation
-    document.addEventListener('astro:page-load', initTypewriter);
-    
-    // Optional: Cleanup on page leave to prevent memory leaks or errors
-    document.addEventListener('astro:before-swap', () => {
-        clearTimeout(typewriterTimeout);
-    });
+        // Cleanup on navigation
+        document.addEventListener('astro:before-swap', cleanup);
+    })();
 </script>
