@@ -4,6 +4,7 @@ import type { Language } from '@/i18n/config'
 import { getCollection, render } from 'astro:content'
 import Comment from '@/components/Comment/Index.astro'
 import PostDate from '@/components/PostDate.astro'
+import PostCopyright from '@/components/PostCopyright.astro'
 import TagList from '@/components/TagList.astro'
 import BackButton from '@/components/Widgets/BackButton.astro'
 import TOC from '@/components/Widgets/TOC.astro'
@@ -120,6 +121,7 @@ const { Content, headings, remarkPluginFrontmatter } = await render(post)
     <div id="post-content">
       <Content />
       <!-- Copyright -->
+      <PostCopyright title={post.data.title} url={Astro.url.href} />
       <div id="post-copyright" />
       <!-- Tag List -->
       {post.data.tags?.length > 0 && (

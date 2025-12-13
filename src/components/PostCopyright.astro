@@ -1,0 +1,61 @@
+---
+import { themeConfig } from '@/config'
+import { getLangFromLocale } from '@/i18n/lang'
+
+interface Props {
+  title: string
+  url: string
+}
+
+const { title, url } = Astro.props
+const { author, site } = themeConfig.site
+const currentLang = getLangFromLocale(Astro.currentLocale)
+
+const translations = {
+  en: {
+    author: 'Author',
+    published: 'Published',
+    link: 'Link',
+    license: 'License',
+    licenseText: 'CC BY-NC-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-nc-sa/4.0/',
+    statement: 'All articles in this blog are licensed under {license} unless otherwise stated.'
+  },
+  zh: {
+    author: '本文作者',
+    published: '发布于',
+    link: '本文链接',
+    license: '版权声明',
+    licenseText: 'CC BY-NC-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh',
+    statement: '本博客所有文章除特别声明外，均采用 {license} 许可协议。转载请注明出处！'
+  },
+  'zh-tw': {
+    author: '本文作者',
+    published: '發布於',
+    link: '本文鏈接',
+    license: '版權聲明',
+    licenseText: 'CC BY-NC-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh_TW',
+    statement: '本博客所有文章除特別聲明外，均採用 {license} 許可協議。轉載請註明出處！'
+  }
+}
+
+// Fallback to English or specific language based on config, here simplified
+const t = translations[currentLang as keyof typeof translations] || translations.en
+const siteTitle = themeConfig.site.title
+---
+
+<div class="post-copyright my-10 p-6 rounded-lg bg-gray-50 dark:bg-gray-800/50 border-l-4 border-primary/60 hover:border-primary transition-colors">
+  <div class="flex flex-col gap-2">
+    <div class="font-bold text-lg">{title}</div>
+    <div class="text-sm text-gray-600 dark:text-gray-400">
+      <span class="font-semibold">{t.link}:</span> <a href={url} class="hover:text-primary break-all">{url}</a>
+    </div>
+    <div class="text-sm text-gray-600 dark:text-gray-400">
+      <span class="font-semibold">{t.license}:</span> {t.statement.split('{license}')[0]}
+      <a href={t.licenseUrl} target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">{t.licenseText}</a>
+      {t.statement.split('{license}')[1]}
+    </div>
+  </div>
+</div>
