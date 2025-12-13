@@ -23,50 +23,32 @@ const currentUI = ui[currentLang as keyof typeof ui] ?? {}
   </div>
 
   <div class="max-w-[var(--content-width)] mx-auto px-4 sm:px-0">
-    <div id="search" class="ml-3 p-4">
-      <p id="search-loading" class="text-gray-500">Loading search...</p>
-    </div>
+    <div id="search" class="ml-3 p-4"></div>
   </div>
+
+  <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
+  <script is:inline src="/pagefind/pagefind-ui.js"></script>
 
   <script is:inline>
     function initPagefind() {
       const searchContainer = document.getElementById('search');
-      const loadingMessage = document.getElementById('search-loading');
       if (!searchContainer) return;
       
-      // Load Pagefind CSS
-      if (!document.querySelector('link[href="/pagefind/pagefind-ui.css"]')) {
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = '/pagefind/pagefind-ui.css';
-        document.head.appendChild(link);
-      }
+      // Clear previous instance if exists (for View Transitions)
+      searchContainer.innerHTML = '';
       
-      // Load Pagefind JS
-      const script = document.createElement('script');
-      script.src = '/pagefind/pagefind-ui.js';
-      script.onload = function() {
-        if (typeof PagefindUI !== 'undefined') {
-          // Clear loading message
-          searchContainer.innerHTML = '';
-          
-          new PagefindUI({
-            element: '#search',
-            showSubResults: true,
-            showImages: false,
-            translations: {
-              placeholder: 'Search...',
-              zero_results: 'No results found for "[SEARCH_TERM]"',
-            }
-          });
-        }
-      };
-      script.onerror = function() {
-        if (loadingMessage) {
-          loadingMessage.textContent = 'Search is only available after building the site. Run "pnpm build && pnpm preview" to test.';
-        }
-      };
-      document.head.appendChild(script);
+      // Check if PagefindUI is loaded
+      if (typeof PagefindUI !== 'undefined') {
+        new PagefindUI({
+          element: '#search',
+          showSubResults: true,
+          showImages: false,
+          translations: {
+            placeholder: 'Search...',
+            zero_results: 'No results found for "[SEARCH_TERM]"',
+          }
+        });
+      }
     }
     
     // Initialize on first load
