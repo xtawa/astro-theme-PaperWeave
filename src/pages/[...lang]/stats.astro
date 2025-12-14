@@ -66,15 +66,18 @@ function formatNumber(num: number) {
 
   <div class="max-w-[var(--content-width)] mx-auto px-4 sm:px-0">
     <!-- Typewriter Effect -->
-    <div class="mb-12 p-8 rounded-2xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 relative overflow-hidden group">
+    <typewriter-effect 
+        data-text={randomQuote.text || "Reading is a journey."}
+        class="block mb-12 p-8 rounded-2xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 relative overflow-hidden group"
+    >
         <div class="absolute top-0 left-0 w-1 h-full bg-primary/20 group-hover:bg-primary/40 transition-colors"></div>
         <div class="font-serif text-xl md:text-2xl leading-relaxed text-gray-800 dark:text-gray-200 min-h-[3rem]">
-            <span id="typewriter-text"></span><span class="animate-pulse text-primary">|</span>
+            <span class="typewriter-content"></span><span class="animate-pulse text-primary">|</span>
         </div>
-        <div class="mt-4 text-right text-sm text-gray-500 dark:text-gray-400 opacity-0 transition-opacity duration-1000" id="typewriter-source">
+        <div class="mt-4 text-right text-sm text-gray-500 dark:text-gray-400 opacity-0 transition-opacity duration-1000 typewriter-source">
             —— <a href={getPostPath(randomQuote.link, currentLang)} class="hover:text-primary transition-colors border-b border-dashed border-gray-300 dark:border-gray-600 hover:border-primary">{randomQuote.title}</a>
         </div>
-    </div>
+    </typewriter-effect>
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-16">
@@ -141,52 +144,53 @@ function formatNumber(num: number) {
   </div>
 </Layout>
 
-<script is:inline define:vars={{ quote: randomQuote.text }}>
-    let typewriterTimeout;
+<script>
+    class TypewriterEffect extends HTMLElement {
+        private timeoutId: number | undefined;
+        private contentEl: HTMLElement | null = null;
+        private sourceEl: HTMLElement | null = null;
 
-    function initTypewriter() {
-        const textElement = document.getElementById('typewriter-text');
-        const sourceElement = document.getElementById('typewriter-source');
-        
-        // If elements don't exist (e.g. navigated away), stop
-        if (!textElement || !sourceElement) return;
+        constructor() {
+            super();
+        }
 
-        // Reset
-        clearTimeout(typewriterTimeout);
-        textElement.textContent = '';
-        sourceElement.classList.add('opacity-0');
-        
-        const text = quote || "Reading is a journey.";
-        let index = 0;
-        
-        function type() {
-            // Check existence again in case user navigated away during typing
-            if (!document.getElementById('typewriter-text')) return;
+        connectedCallback() {
+            this.contentEl = this.querySelector('.typewriter-content');
+            this.sourceEl = this.querySelector('.typewriter-source');
+            const text = this.dataset.text || '';
 
-            if (index < text.length) {
-                textElement.textContent += text.charAt(index);
-                index++;
-                const delay = Math.random() * 70 + 30; 
-                typewriterTimeout = setTimeout(type, delay);
-            } else {
-                if (sourceElement) {
-                    sourceElement.classList.remove('opacity-0');
-                }
+            if (this.contentEl && this.sourceEl) {
+                // Clear content immediately to prevent flashing from cached state
+                this.contentEl.textContent = '';
+                this.sourceEl.classList.add('opacity-0');
+                
+                // Start typing
+                this.type(text, 0);
             }
         }
 
-        // Start typing
-        typewriterTimeout = setTimeout(type, 500);
+        disconnectedCallback() {
+            if (this.timeoutId) {
+                clearTimeout(this.timeoutId);
+            }
+        }
+
+        type(text: string, index: number) {
+            if (!this.isConnected) return;
+
+            if (index < text.length) {
+                if (this.contentEl) {
+                    this.contentEl.textContent += text.charAt(index);
+                }
+                const delay = Math.random() * 70 + 30;
+                this.timeoutId = window.setTimeout(() => this.type(text, index + 1), delay);
+            } else {
+                if (this.sourceEl) {
+                    this.sourceEl.classList.remove('opacity-0');
+                }
+            }
+        }
     }
 
-    // Run on initial load
-    initTypewriter();
-
-    // Run on view transitions navigation
-    document.addEventListener('astro:page-load', initTypewriter);
-    
-    // Optional: Cleanup on page leave to prevent memory leaks or errors
-    document.addEventListener('astro:before-swap', () => {
-        clearTimeout(typewriterTimeout);
-    });
+    customElements.define('typewriter-effect', TypewriterEffect);
 </script>

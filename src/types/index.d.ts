@@ -93,4 +93,12 @@ export interface ThemeConfig {
     customGoogleAnalyticsJS?: string
     customUmamiAnalyticsJS?: string
   }
+  search?: {
+    algolia?: {
+      enabled?: boolean
+      appId?: string
+      apiKey?: string
+      indexName?: string
+    }
+  }
 }

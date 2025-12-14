@@ -171,7 +171,7 @@ export const themeConfig: ThemeConfig = {
       },
       {
         name: 'Email',
-        url: 'email@radishzz.cc',
+        url: 'mailto:zeromostia@gmail.com',
       },
       {
         name: 'X',
@@ -187,7 +187,7 @@ export const themeConfig: ThemeConfig = {
   preload: {
     // image hosting url
     // optimize remote images and generate low-quality placeholders
-    imageHostURL: 'r2.xtyin.com',
+    imageHostURL: 'dav1.xtyin.com',
     // custom google analytics js
     // for users who proxy tracking scripts to a custom domain
     // see https://gist.github.com/xiaopc/0602f06ca465d76bd9efd3dda9393738
@@ -197,6 +197,14 @@ export const themeConfig: ThemeConfig = {
     // see https://umami.is/docs/bypass-ad-blockers
     customUmamiAnalyticsJS: 'https://views.radishzz.cc/script.js',
   },
+  search: {
+    algolia: {
+      enabled: true,
+      appId: 'XG9J7TBGD8',
+      apiKey: '5e7da999c5375ffc89f0dc6d38a81570',
+      indexName: 'blog_xtyin_pages',
+    },
+  },  
   // PRELOAD SETTINGS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END
 }
 

@@ -71,13 +71,12 @@ const isHome = isHomePage(Astro.url.pathname)
           />
         </div>
 
-        {/* desktop post description */}
+        {/* post description */}
         {isHome && (
           <div
-            class="heti hidden"
-            lg="mt-2.25 block"
+            class="heti mt-2 lg:mt-2.25 text-gray-500 dark:text-gray-400 text-sm lg:text-base"
           >
-            <p>{getPostDescription(post, 'list')}</p>
+            <p class="line-clamp-3 lg:line-clamp-none">{getPostDescription(post, 'list')}</p>
           </div>
         )}
       </li>

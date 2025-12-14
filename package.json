@@ -6,7 +6,7 @@
   "repository": "https://github.com/radishzzz/astro-theme-retypeset",
   "scripts": {
     "dev": "astro check && astro dev",
-    "build": "astro check && astro build && pnpm apply-lqip && pagefind --site dist",
+    "build": "astro check && astro build && pnpm apply-lqip",
     "preview": "astro preview",
     "astro": "astro",
     "lint": "eslint .",
@@ -23,6 +23,7 @@
     "@astrojs/partytown": "^2.1.4",
     "@astrojs/sitemap": "^3.6.0",
     "@astrojs/vercel": "^9.0.2",
+    "@docsearch/js": "^4.3.2",
     "@waline/client": "^3.8.0",
     "astro": "^5.16.5",
     "astro-compress": "^2.3.8",
@@ -43,13 +44,11 @@
     "remark-math": "^6.0.0",
     "sanitize-html": "^2.17.0",
     "sharp": "^0.34.5",
-    "twikoo": "^1.6.44",
-    "unist-util-visit": "^5.0.0"
+    "twikoo": "^1.6.44"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^6.6.1",
     "@astrojs/check": "^0.9.6",
-    "@types/lunr": "^2.3.7",
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^25.0.0",
     "@types/node-fetch": "^2.6.13",
@@ -64,13 +63,12 @@
     "fast-glob": "^3.3.3",
     "https-proxy-agent": "^7.0.6",
     "lint-staged": "^16.2.7",
-    "lunr": "^2.3.9",
     "node-fetch": "^3.3.2",
-    "pagefind": "^1.4.0",
     "playwright": "^1.57.0",
     "simple-git-hooks": "^2.13.1",
     "tsx": "^4.21.0",
     "typescript": "~5.9.3",
+    "unist-util-visit": "^5.0.0",
     "unocss": "66.5.10",
     "unocss-preset-theme": "^0.14.1"
   },

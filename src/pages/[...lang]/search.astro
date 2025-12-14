@@ -1,5 +1,5 @@
 ---
-import { allLocales } from '@/config'
+import { allLocales, themeConfig } from '@/config'
 import { getLangFromLocale, getLangRouteParam } from '@/i18n/lang'
 import { ui } from '@/i18n/ui'
 import Layout from '@/layouts/Layout.astro'
@@ -12,6 +12,9 @@ export async function getStaticPaths() {
 
 const currentLang = getLangFromLocale(Astro.currentLocale)
 const currentUI = ui[currentLang as keyof typeof ui] ?? {}
+
+const algoliaConfig = themeConfig.search?.algolia
+const isAlgoliaEnabled = algoliaConfig?.enabled && algoliaConfig.appId && algoliaConfig.apiKey && algoliaConfig.indexName
 ---
 
 <Layout>
@@ -23,77 +26,109 @@ const currentUI = ui[currentLang as keyof typeof ui] ?? {}
   </div>
 
   <div class="max-w-[var(--content-width)] mx-auto px-4 sm:px-0">
-    <div id="search" class="ml-3 p-4"></div>
+    {isAlgoliaEnabled ? (
+      <div id="docsearch" class="ml-3 p-4"></div>
+    ) : (
+      <div class="ml-3 p-4 text-gray-500">
+        <p>Search is not configured. Please configure Algolia DocSearch in <code>src/config.ts</code>.</p>
+        <p class="mt-2">See <a href="https://docsearch.algolia.com/apply/" class="text-primary underline" target="_blank">Algolia DocSearch</a> to apply for free.</p>
+      </div>
+    )}
   </div>
 
-  <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
-  <script is:inline src="/pagefind/pagefind-ui.js"></script>
-
-  <script is:inline>
-    function initPagefind() {
-      const searchContainer = document.getElementById('search');
-      if (!searchContainer) return;
-      
-      // Clear previous instance if exists (for View Transitions)
-      searchContainer.innerHTML = '';
-      
-      // Check if PagefindUI is loaded
-      if (typeof PagefindUI === 'undefined') return;
-      
-      new PagefindUI({
-        element: '#search',
-        showSubResults: true,
-        showImages: false,
-        translations: {
-          placeholder: 'Search...',
-          zero_results: 'No results found for "[SEARCH_TERM]"',
+  {isAlgoliaEnabled && (
+    <>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3" />
+      <script is:inline define:vars={{ appId: algoliaConfig!.appId, apiKey: algoliaConfig!.apiKey, indexName: algoliaConfig!.indexName }}>
+        function initDocSearch() {
+          const container = document.getElementById('docsearch');
+          // Check if container exists
+          if (!container) return;
+          
+          // Check if docsearch is loaded
+          if (typeof docsearch === 'undefined') {
+            console.warn('DocSearch not loaded yet, retrying in 100ms...');
+            setTimeout(initDocSearch, 100);
+            return;
+          }
+          
+          // Clear container to prevent duplicates
+          container.innerHTML = '';
+          
+          try {
+            docsearch({
+              appId: appId,
+              apiKey: apiKey,
+              indexName: indexName,
+              container: '#docsearch',
+              debug: false, // Set to true if styling issues persist
+            });
+          } catch (e) {
+            console.error('DocSearch init failed:', e);
+          }
         }
-      });
-    }
-    
-    // Initialize on first load
-    document.addEventListener('DOMContentLoaded', initPagefind);
-    
-    // Reinitialize on View Transitions navigation
-    document.addEventListener('astro:page-load', initPagefind);
-  </script>
+        
+        // Load DocSearch JS if not already loaded
+        if (!document.getElementById('docsearch-script')) {
+          const script = document.createElement('script');
+          script.id = 'docsearch-script';
+          script.src = 'https://cdn.jsdelivr.net/npm/@docsearch/js@3';
+          script.onload = initDocSearch;
+          script.onerror = (e) => console.error('Failed to load DocSearch script:', e);
+          document.head.appendChild(script);
+        } else {
+          // If script exists, initialize immediately
+          initDocSearch();
+        }
+        
+        // Note: Since this is an inline script, it runs every time the page content is updated 
+        // by View Transitions, so we don't need a separate 'astro:page-load' listener 
+        // which would accumulate duplicates.
+      </script>
+    </>
+  )}
   
   <style is:global>
-    /* Customize Pagefind UI to match theme */
+    /* Customize DocSearch UI to match theme */
     :root {
-      --pagefind-ui-scale: 1;
-      --pagefind-ui-primary: var(--c-main);
-      --pagefind-ui-text: var(--c-text);
-      --pagefind-ui-background: var(--c-bg);
-      --pagefind-ui-border: var(--c-border);
-      --pagefind-ui-tag: var(--c-main);
-      --pagefind-ui-border-width: 1px;
-      --pagefind-ui-border-radius: 0.25rem;
-      --pagefind-ui-image-border-radius: 0.25rem;
-      --pagefind-ui-image-box-ratio: 3 / 2;
-      --pagefind-ui-font: inherit;
+      --docsearch-primary-color: var(--c-main);
+      --docsearch-text-color: var(--c-text);
+      --docsearch-muted-color: var(--c-text-light);
+      --docsearch-container-background: rgba(0, 0, 0, 0.5);
+      --docsearch-modal-background: var(--c-bg);
+      --docsearch-searchbox-background: var(--c-bg);
+      --docsearch-searchbox-focus-background: var(--c-bg);
+      --docsearch-hit-background: var(--c-bg);
+      --docsearch-footer-background: var(--c-bg);
     }
 
     .dark {
-      --pagefind-ui-primary: var(--c-main);
-      --pagefind-ui-text: var(--c-text);
-      --pagefind-ui-background: var(--c-bg);
-      --pagefind-ui-border: var(--c-border);
-      --pagefind-ui-tag: var(--c-main);
+      --docsearch-primary-color: var(--c-main);
+      --docsearch-text-color: var(--c-text);
+      --docsearch-muted-color: var(--c-text-light);
+      --docsearch-modal-background: var(--c-bg);
+      --docsearch-searchbox-background: var(--c-bg);
+      --docsearch-searchbox-focus-background: var(--c-bg);
+      --docsearch-hit-background: var(--c-bg);
+      --docsearch-footer-background: var(--c-bg);
     }
 
-    /* Additional tweaks for better integration */
-    .pagefind-ui__search-input {
-      background-color: transparent;
-      color: var(--c-text);
+    /* Make search button full width */
+    .DocSearch-Button {
+      width: 100%;
+      margin: 0;
+      padding: 12px 16px;
+      border-radius: 8px;
+      background-color: var(--c-bg);
+      border: 1px solid var(--c-border);
     }
-    
-    .pagefind-ui__result-title {
-      color: var(--c-main) !important;
+
+    .DocSearch-Button:hover {
+      border-color: var(--c-main);
     }
-    
-    .pagefind-ui__result-excerpt {
-      color: var(--c-text-light) !important;
+
+    .DocSearch-Button-Placeholder {
+      font-size: 1rem;
     }
   </style>
 </Layout>

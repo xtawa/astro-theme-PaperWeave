@@ -15,10 +15,29 @@ import { langMap } from './src/i18n/config'
 import { rehypeCodeCopyButton } from './src/plugins/rehype-code-copy-button.mjs'
 import { rehypeExternalLinks } from './src/plugins/rehype-external-links.mjs'
 import { rehypeHeadingAnchor } from './src/plugins/rehype-heading-anchor.mjs'
-import { rehypeImageProcessor } from './src/plugins/rehype-image-processor.mjs'
+// import { rehypeImageProcessor } from './src/plugins/rehype-image-processor.mjs' // ✅ 已停用
 import { remarkContainerDirectives } from './src/plugins/remark-container-directives.mjs'
 import { remarkLeafDirectives } from './src/plugins/remark-leaf-directives.mjs'
 import { remarkReadingTime } from './src/plugins/remark-reading-time.mjs'
+import { visit } from 'unist-util-visit'
+
+// --- ✨ 修复版：Obsidian 图片自动替换插件 ---
+function remarkFixObsidianImages() {
+  // ✅ 修复 1: 给 tree 参数加上 : any 类型，解决 ts(7006) 报错
+  return (tree: any) => {
+    visit(tree, 'image', (node, index, parent) => {
+      if (node.url && node.url.includes('dav1.xtyin.com')) {
+        const safeUrl = encodeURI(node.url)
+        const htmlNode = {
+          type: 'html',
+          value: `<img src="${safeUrl}" alt="${node.alt || ''}" loading="lazy" style="max-width: 100%; height: auto;" />`
+        }
+        parent.children.splice(index, 1, htmlNode)
+      }
+    })
+  }
+}
+// ----------------------------------------------------
 
 const { url: site } = themeConfig.site
 const { imageHostURL } = themeConfig.preload ?? {}
@@ -30,18 +49,20 @@ export default defineConfig({
   adapter: vercel(),
   site,
   base,
-  trailingSlash: 'always', // Not recommended to change
+  trailingSlash: 'always',
   prefetch: {
     prefetchAll: true,
-    defaultStrategy: 'viewport', // hover, tap, viewport, load
+    defaultStrategy: 'viewport',
   },
   ...imageConfig,
   i18n: {
     locales: Object.entries(langMap).map(([path, codes]) => ({
       path,
+      // ✅ 恢复原有的类型断言，防止潜在的类型推断错误
       codes: [...codes] as [string, ...string[]],
     })),
-    defaultLocale,
+    // ✅ 修复 2: 强制断言 defaultLocale 为 any，解决 ts(2322) 类型不匹配报错
+    defaultLocale: defaultLocale as any,
   },
   integrations: [
     UnoCSS({
@@ -64,6 +85,7 @@ export default defineConfig({
   ],
   markdown: {
     remarkPlugins: [
+      remarkFixObsidianImages, // 自定义插件
       remarkDirective,
       remarkMath,
       remarkContainerDirectives,
@@ -75,7 +97,7 @@ export default defineConfig({
       [rehypeMermaid, { strategy: 'pre-mermaid' }],
       rehypeSlug,
       rehypeHeadingAnchor,
-      rehypeImageProcessor,
+      // rehypeImageProcessor, // ！
       rehypeExternalLinks,
       rehypeCodeCopyButton,
     ],
@@ -84,7 +106,6 @@ export default defineConfig({
       excludeLangs: ['mermaid'],
     },
     shikiConfig: {
-      // Available themes: https://shiki.style/themes
       themes: {
         light: 'github-light',
         dark: 'github-dark',
@@ -99,7 +120,6 @@ export default defineConfig({
           if (!id.endsWith('src/styles/font.css')) {
             return null
           }
-
           return code.replace(/url\("\/fonts\//g, `url("${base}/fonts/`)
         },
       },

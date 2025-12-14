@@ -100,6 +100,11 @@ const { Content, headings, remarkPluginFrontmatter } = await render(post)
           {post.data.title}
         </span>
       </h1>
+      {post.data.description && (
+        <div class="mt-4 text-gray-500 dark:text-gray-400 text-lg leading-relaxed">
+          {post.data.description}
+        </div>
+      )}
     </div>
 
     <!-- Date -->
