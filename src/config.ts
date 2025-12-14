@@ -4,17 +4,17 @@ export const themeConfig: ThemeConfig = {
   // SITE INFORMATION >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START
   site: {
     // site title
-    title: 'Hi,Co1sini',
+    title: 'PaperWeave',
     // site subtitle
-    subtitle: 'Footstep printer',
+    subtitle: 'Where typography feels like paper.',
     // site description
-    description: 'Christina Ivan 的个人博客，记录学习心得、分享个人生活、共享技术资源，与我一起无限进步',
+    description: 'The demo site of Astro-theme-paperweave',
     // use i18n title/subtitle/description from src/i18n/ui.ts instead of static ones above
     i18nTitle: false, // true | false
     // author name
-    author: 'Christina Ivan(xtawa)',
+    author: 'Christina Ivan',
     // site url
-    url: 'https://blog.xtyin.com',
+    url: 'https://demo.paperweave.xtyin.com',
     // base path
     // root directory for all pages and assets
     base: '/', // e.g., '/blog', '/docs'
@@ -102,7 +102,7 @@ export const themeConfig: ThemeConfig = {
     // https://waline.js.org/en/
     waline: {
       // server url
-      serverURL: 'https://waline.xtyin.com',
+      serverURL: '',
       // emoji url
       emoji: [
         'https://unpkg.com/@waline/emojis@1.2.0/tw-emoji',
@@ -141,7 +141,7 @@ export const themeConfig: ThemeConfig = {
     googleAnalyticsID: '',
     // umami analytics
     // https://cloud.umami.is
-    umamiAnalyticsID: 'dddeb945-02ab-4144-bb55-b56034cd70ef',
+    umamiAnalyticsID: '',
     // follow verification
     // https://follow.is/
     follow: {
@@ -153,7 +153,7 @@ export const themeConfig: ThemeConfig = {
     // apiflash access key
     // generate website screenshots for open graph images
     // get your access key at: https://apiflash.com/
-    apiflashKey: 'd52d7960ec3642609665099e2f698d13',
+    apiflashKey: '',
   },
   // SEO SETTINGS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END
 
@@ -171,7 +171,7 @@ export const themeConfig: ThemeConfig = {
       },
       {
         name: 'Email',
-        url: 'mailto:zeromostia@gmail.com',
+        url: 'mailto:',
       },
       {
         name: 'X',
@@ -195,14 +195,14 @@ export const themeConfig: ThemeConfig = {
     // custom umami analytics js
     // for users who self-deploy umami or proxy tracking scripts to a custom domain
     // see https://umami.is/docs/bypass-ad-blockers
-    customUmamiAnalyticsJS: 'https://views.radishzz.cc/script.js',
+    customUmamiAnalyticsJS: '',
   },
   search: {
     algolia: {
       enabled: true,
-      appId: 'XG9J7TBGD8',
-      apiKey: '5e7da999c5375ffc89f0dc6d38a81570',
-      indexName: 'blog_xtyin_pages',
+      appId: '',
+      apiKey: '',
+      indexName: '',
     },
   },  
   // PRELOAD SETTINGS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END
